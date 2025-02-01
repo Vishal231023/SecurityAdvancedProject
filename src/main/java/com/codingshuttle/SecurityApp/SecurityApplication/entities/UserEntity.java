@@ -26,6 +26,22 @@ public class UserEntity implements UserDetails {
 
     private String password;
 
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    // used this constructor to create userEntity for tests
+//    public UserEntity(Long id,String email, String password) {
+//        this.id = id;
+//        this.email = email;
+//        this.password = password;
+//    }
+
     public Long getId() {
         return id;
     }
