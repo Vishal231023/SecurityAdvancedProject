@@ -3,15 +3,21 @@ package com.codingshuttle.SecurityApp.SecurityApplication.services;
 
 import com.codingshuttle.SecurityApp.SecurityApplication.dto.PostDto;
 import com.codingshuttle.SecurityApp.SecurityApplication.entities.PostEntity;
+import com.codingshuttle.SecurityApp.SecurityApplication.entities.UserEntity;
 import com.codingshuttle.SecurityApp.SecurityApplication.exceptions.ResourceNotFoundException;
 import com.codingshuttle.SecurityApp.SecurityApplication.repositories.PostRepository;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class PostServiceImpl implements PostService {
+    private static final Logger log = LoggerFactory.getLogger(PostServiceImpl.class);
+
 
     private final PostRepository postRepository;
     private  final ModelMapper modelMapper;
@@ -41,7 +47,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto getPostById(Long id) {
-       PostEntity post = postRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Post not found with this Id " +id));
+        UserEntity user = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        log.info("user {}", user);
+       PostEntity post = postRepository
+               .findById(id)
+               .orElseThrow(()-> new ResourceNotFoundException("Post not found with this Id " +id));
 
        return modelMapper.map(post, PostDto.class);
     }

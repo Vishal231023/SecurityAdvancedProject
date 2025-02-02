@@ -1,25 +1,27 @@
 package com.codingshuttle.SecurityApp.SecurityApplication.config;
 
+import com.codingshuttle.SecurityApp.SecurityApplication.filters.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+    private final JwtAuthFilter jwtAuthFilter;
+
+    public WebSecurityConfig(JwtAuthFilter jwtAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws  Exception{
@@ -30,13 +32,13 @@ public class WebSecurityConfig {
 //                                             .loginPage("/newLogin.html")) // usin this we can define templates in resources                                // define it, then form will not come.
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/posts","/error","/auth/**").permitAll()
-                        .requestMatchers("/posts/**").hasAnyRole("ADMIN")
+//                        .requestMatchers("/posts/**").authenticated()
                         .anyRequest().authenticated())
                 .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
                 .sessionManagement(sesionConfig ->
                         sesionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(Customizer.withDefaults());
-        return httpSecurity.build();
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                                    return httpSecurity.build();
     }
 
 //    @Bean
@@ -61,8 +63,5 @@ public class WebSecurityConfig {
         return  configuration.getAuthenticationManager();
     }
 
-    @Bean
-    PasswordEncoder  getPasswordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
+
 }

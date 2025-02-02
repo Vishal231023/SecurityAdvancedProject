@@ -1,16 +1,15 @@
 package com.codingshuttle.SecurityApp.SecurityApplication.services;
 
-import com.codingshuttle.SecurityApp.SecurityApplication.dto.LogInDto;
+
 import com.codingshuttle.SecurityApp.SecurityApplication.dto.SignUpDto;
 import com.codingshuttle.SecurityApp.SecurityApplication.dto.UserDto;
 import com.codingshuttle.SecurityApp.SecurityApplication.entities.UserEntity;
 import com.codingshuttle.SecurityApp.SecurityApplication.exceptions.ResourceNotFoundException;
 import com.codingshuttle.SecurityApp.SecurityApplication.repositories.Userrepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.authentication.AuthenticationManager;
+
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -40,7 +39,12 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
-                .orElseThrow( () ->  new ResourceNotFoundException("user is not available with this username " + email));
+                .orElseThrow( () ->  new BadCredentialsException("user is not available with this username " + email));
+    }
+
+    public UserEntity getUserById(Long userId){
+        return userRepository.findById(userId)
+                .orElseThrow(() ->  new ResourceNotFoundException("user is not available with this userId " + userId));
     }
 
     public UserDto signUp(SignUpDto signUpDto) {

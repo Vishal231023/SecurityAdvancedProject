@@ -4,7 +4,6 @@ import com.codingshuttle.SecurityApp.SecurityApplication.dto.LogInDto;
 import com.codingshuttle.SecurityApp.SecurityApplication.entities.UserEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
